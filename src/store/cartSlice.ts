@@ -1,15 +1,32 @@
-// src/store/cartSlice.ts
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+// Тип данных товара в корзине
+interface CartItem {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+// Тип начального состояния корзины
+interface CartState {
+  items: CartItem[];
+  totalItems: number;
+  totalPrice: number;
+}
+
+// Начальное состояние
+const initialState: CartState = {
+  items: [],
+  totalItems: 0,
+  totalPrice: 0,
+};
 
 const cartSlice = createSlice({
   name: "cart",
-  initialState: {
-    items: [], // [{ id, name, price, quantity }]
-    totalItems: 0,
-    totalPrice: 0,
-  },
+  initialState,
   reducers: {
-    addToCart: (state, action) => {
+    addToCart: (state, action: PayloadAction<CartItem>) => {
       const product = action.payload;
       const existingItem = state.items.find((item) => item.id === product.id);
 
@@ -22,7 +39,7 @@ const cartSlice = createSlice({
       state.totalItems += 1;
       state.totalPrice += product.price;
     },
-    removeFromCart: (state, action) => {
+    removeFromCart: (state, action: PayloadAction<number>) => {
       const productId = action.payload;
       const existingItem = state.items.find((item) => item.id === productId);
 
@@ -32,7 +49,10 @@ const cartSlice = createSlice({
         state.items = state.items.filter((item) => item.id !== productId);
       }
     },
-    updateQuantity: (state, action) => {
+    updateQuantity: (
+      state,
+      action: PayloadAction<{ id: number; quantity: number }>
+    ) => {
       const { id, quantity } = action.payload;
       const existingItem = state.items.find((item) => item.id === id);
 
